@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace Teva.Common.Data.Gremlin.GraphItems
 {
-    public class Value : GraphItem
+    public class VertexValue : GraphItem
     {
+        public VertexValue()
+        {
+        }
+
+        public VertexValue(object Contents)
+        {
+            this.Contents = Contents;
+        }
+
         [JsonProperty("value")]
         public object Contents { get; set; }
     }

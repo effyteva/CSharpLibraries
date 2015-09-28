@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿#define UseIndexes
+
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,25 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         public string Type { get; set; }
 
         [JsonProperty("properties")]
-        public Dictionary<string, List<Value>> Properties { get; set; }
+        public VertexProperties Properties { get; set; }
+
+        public long VertexID
+        {
+            get
+            {
+#if UseIndexes
+                return ExplicitID.Value;
+#else
+                return ID;
+#endif
+            }
+        }
+        public long? ExplicitID
+        {
+            get
+            {
+                return Properties.GetProperty<long?>("explicitid");
+            }
+        }
     }
 }

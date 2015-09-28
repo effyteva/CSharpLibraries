@@ -7,15 +7,20 @@ When Gremlin Server gets an official version, I'll transform my Gremlin Script b
 
 Please note this requires .NET Framework 4.5 or higher, and Windows 8/Server 2012 or newer.
 
+There are three primary classes:
+* GremlinClient - Uses both GremlinScript and GremlinServerClient, to provide an easy to use library on Gremlin
+* GremlinScript - Gremlin script builder library, can be used to access graph
+* GremlinServerClient - WebSockets client
+
 Usage sample:
 
-	var Gremlin = new Teva.Common.Data.Gremlin.GremlinClient();
+	var Gremlin = new Teva.Common.Data.Gremlin.GremlinClient("localhost", 8184);
 
-    List<long> Scalar = Gremlin.Send<long>("5 + 6", null);
-    Console.WriteLine(Scalar[0]);
+	var Script = new Teva.Common.Data.Gremlin.GremlinScript();
+	Script.Append_GetVerticesByIndex("Name", "Effy").Out("Knows")
 
-    List<Teva.Common.Data.Gremlin.GraphItems.Vertex> Vertices = Gremlin.Send<Teva.Common.Data.Gremlin.GraphItems.Vertex>("g.addVertex('Key', x);", new Dictionary<string, object>
-    {
-        { "x", "value" }
-    });
-    Console.WriteLine(Vertices[0].ID);
+	var Vertices = Gremlin.GetVertices(Script);
+	foreach (var Vertice in Vertices)
+	{
+		Console.WriteLine(Vertices[0].ID);
+	}

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Teva.Common.Data.Gremlin</RootNamespace>
     <AssemblyName>Teva.Common.Data.Gremlin</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -17,6 +17,7 @@
     <SccProvider>SAK</SccProvider>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,8 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,9 +50,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\ServerSerializationError.cs" />
+    <Compile Include="Exceptions\ServerTimeoutException.cs" />
+    <Compile Include="Exceptions\ScriptEvaluationErrorException.cs" />
+    <Compile Include="Exceptions\ServerErrorException.cs" />
+    <Compile Include="Exceptions\InvalidRequestArgumentsException.cs" />
+    <Compile Include="Exceptions\MalformedRequestException.cs" />
     <Compile Include="GraphItems\Edge.cs" />
+    <Compile Include="GraphItems\EdgeProperties.cs" />
+    <Compile Include="GraphItems\VertexProperties.cs" />
     <Compile Include="GraphItems\GraphItem.cs" />
-    <Compile Include="GremlinClient.cs" />
+    <Compile Include="GremlinServerClient.cs" />
+    <Compile Include="GremlinScript.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\RequestMessage.cs" />
     <Compile Include="Messages\ScriptArguments.cs" />
@@ -58,11 +69,14 @@
     <Compile Include="Messages\ScriptResponse.cs" />
     <Compile Include="Messages\ScriptResponseResult.cs" />
     <Compile Include="Messages\ScriptResponseStatus.cs" />
-    <Compile Include="GraphItems\ValueGraphItem.cs" />
+    <Compile Include="GraphItems\VertexValue.cs" />
     <Compile Include="GraphItems\Vertex.cs" />
+    <Compile Include="GremlinClient.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

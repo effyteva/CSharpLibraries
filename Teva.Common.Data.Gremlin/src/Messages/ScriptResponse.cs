@@ -13,7 +13,7 @@ namespace Teva.Common.Data.Gremlin.Messages
         public ScriptResponseResult<DataType> Result { get; set; }
 
         [JsonProperty("requestId")]
-        public Guid RequestID { get; set; }
+        public Guid? RequestID { get; set; }
 
         [JsonProperty("status")]
         public ScriptResponseStatus Status { get; set; }

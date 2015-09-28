@@ -9,14 +9,15 @@ namespace Teva.Common.Data.Gremlin.GraphItems
 {
     public class Edge : GraphItem
     {
+#warning IDs should be strings
         [JsonProperty("inV")]
-        public string InVertex { get; set; }
+        public long InVertex { get; set; }
 
         [JsonProperty("inVLabel")]
         public string InVertexLabel { get; set; }
 
         [JsonProperty("outV")]
-        public string OutVertex { get; set; }
+        public long OutVertex { get; set; }
 
         [JsonProperty("outVLabel")]
         public string OutVertexLabel { get; set; }
@@ -28,6 +29,6 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         public string Type { get; set; }
 
         [JsonProperty("properties")]
-        public Dictionary<string, List<Value>> Properties { get; set; }
+        public EdgeProperties Properties { get; set; }
     }
 }
