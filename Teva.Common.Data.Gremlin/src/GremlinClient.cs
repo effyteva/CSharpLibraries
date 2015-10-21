@@ -10,148 +10,157 @@ namespace Teva.Common.Data.Gremlin
 {
     public class GremlinClient
     {
-        public GremlinClient(string Host, int Port)
+        public GremlinClient(string Host, int Port = 8182, string Username = null, string Password = null)
         {
             this.Host = Host;
             this.Port = Port;
-            this.Client = new GremlinServerClient(Host, Port);
+            this.Client = new GremlinServerClient(Host, Port, Username: Username, Password: Password);
         }
 
         #region Vertices
-        public GraphItems.Vertex CreateVertex(Dictionary<string, List<GraphItems.VertexValue>> Properties)
-        {
-            var Script = new GremlinScript();
-            Script.Append_CreateVertex(Properties);
-            return GetVertex(Script);
-        }
-        public GraphItems.Vertex GetVertex(string ID)
-        {
-            var Script = new GremlinScript();
-            Script.Append_GetVertex(ID);
-            return GetVertex(Script);
-        }
         public GraphItems.Vertex GetVertex(GremlinScript Script)
         {
-            var Vertices = Client.Send<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
-            if (Vertices == null || Vertices.Count == 0)
-                return null;
-            return Vertices.First();
+            return Client.ExecuteScalar<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
         }
-        public GraphItems.Vertex GetVertexByIndex(string IndexName, object ID)
+        public Task<GraphItems.Vertex> GetVertexAsync(GremlinScript Script)
         {
-            var Script = new GremlinScript();
-            Script.Append_GetVertexByIndex(IndexName, ID);
-            return GetVertex(Script);
-        }
-        public List<GraphItems.Vertex> GetVerticesByIndex(string IndexName, IEnumerable<object> ID)
-        {
-            var Script = new GremlinScript();
-            Script.Append_GetVerticesByIndex(IndexName, ID);
-            return GetVertices(Script);
-        }
-        public void UpdateVertex(string ID, Dictionary<string, List<GraphItems.VertexValue>> Properties, bool RemoveOtherProperties)
-        {
-            var Script = new GremlinScript();
-            Script.Append_UpdateVertex(ID, Properties, RemoveOtherProperties);
-            Script.Append("null;");
-            Execute(Script);
+            return Client.ExecuteScalarAsync<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
         }
 
         public List<GraphItems.Vertex> GetVertices(GremlinScript Script)
         {
-            return Client.Send<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
+            return Client.Execute<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
         }
-        public IEnumerable<T> ReadVertices<T>(Func<GraphItems.Vertex, T> ReadMethod, GremlinScript Script)
+        public Task<List<GraphItems.Vertex>> GetVerticesAsync(GremlinScript Script)
         {
-            foreach (var Vertex in GetVertices(Script))
-                yield return ReadMethod(Vertex);
+            return Client.ExecuteAsync<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
         }
-        public IEnumerable<T> ReadVertices<T>(GremlinScript Script, Func<GraphItems.Vertex, T> ReadMethod)
+
+        public GraphItems.Vertex CreateVertex(Dictionary<string, List<GraphItems.VertexValue>> Properties)
         {
-            foreach (var Vertex in GetVertices(Script))
-                yield return ReadMethod(Vertex);
+            return GetVertex(new GremlinScript().Append_CreateVertex(Properties));
+        }
+        public Task<GraphItems.Vertex> CreateVertexAsync(Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        {
+            return GetVertexAsync(new GremlinScript().Append_CreateVertex(Properties));
+        }
+
+        public void UpdateVertex(string ID, Dictionary<string, List<GraphItems.VertexValue>> Properties, bool RemoveOtherProperties)
+        {
+            Execute(new GremlinScript().Append_UpdateVertex(ID, Properties, RemoveOtherProperties).Append("null;"));
+        }
+        public Task UpdateVertexAsync(string ID, Dictionary<string, List<GraphItems.VertexValue>> Properties, bool RemoveOtherProperties)
+        {
+            return ExecuteAsync(new GremlinScript().Append_UpdateVertex(ID, Properties, RemoveOtherProperties).Append("null;"));
         }
         #endregion
 
         #region Edges
         public GraphItems.Edge CreateEdge(string StartVertexID, string EndVertexID, string Name, Dictionary<string, object> Properties = null)
         {
-            var Script = new GremlinScript();
-            Script.Append_CreateEdge(StartVertexID, EndVertexID, Name, Properties);
-            return GetEdge(Script);
+            return GetEdge(new GremlinScript().Append_CreateEdge(StartVertexID, EndVertexID, Name, Properties));
         }
+        public Task<GraphItems.Edge> CreateEdgeAsync(string StartVertexID, string EndVertexID, string Name, Dictionary<string, object> Properties = null)
+        {
+            return GetEdgeAsync(new GremlinScript().Append_CreateEdge(StartVertexID, EndVertexID, Name, Properties));
+        }
+
         public void DeleteEdge(string EdgeID)
         {
-            var Script = new GremlinScript();
-            Script.Append_DeleteEdge(EdgeID);
-            Execute(Script);
+            Execute(new GremlinScript().Append_DeleteEdge(EdgeID));
         }
+        public Task DeleteEdgeAsync(string EdgeID)
+        {
+            return ExecuteAsync(new GremlinScript().Append_DeleteEdge(EdgeID));
+        }
+
         public GraphItems.Edge GetEdge(string ID)
         {
-            var Script = new GremlinScript();
-            Script.Append_GetEdge(ID);
-            return GetEdge(Script);
+            return GetEdge(new GremlinScript().Append_GetEdge(ID));
         }
+        public Task<GraphItems.Edge> GetEdgeAsync(string ID)
+        {
+            return GetEdgeAsync(new GremlinScript().Append_GetEdge(ID));
+        }
+
         public GraphItems.Edge GetEdge(GremlinScript Script)
         {
-            var Edges = Client.Send<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
-            if (Edges == null || Edges.Count == 0)
-                return null;
-            return Edges.First();
+            return Client.ExecuteScalar<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
         }
-        public IEnumerable<GraphItems.Edge> GetEdges(GremlinScript Script)
+        public Task<GraphItems.Edge> GetEdgeAsync(GremlinScript Script)
         {
-            return Client.Send<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
+            return Client.ExecuteScalarAsync<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
         }
-        public IEnumerable<T> ReadEdges<T>(GremlinScript Script, Func<GraphItems.Edge, T> ReadMethod)
+
+        public List<GraphItems.Edge> GetEdges(GremlinScript Script)
         {
-            foreach (var Edge in GetEdges(Script))
-                yield return ReadMethod(Edge);
+            return Client.Execute<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task<List<GraphItems.Edge>> GetEdgesAsync(GremlinScript Script)
+        {
+            return Client.ExecuteAsync<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
         }
         #endregion
 
         #region GetArray
         public List<object> GetArray(GremlinScript Script)
         {
-            try
-            {
-                return Client.Send<object>(Script.GetScript(), Script.GetBindings());
-            }
-            catch (Exception E)
-            {
-                throw new Exception(E.Message + "\r\n" + Script.GetReadableScript(), E);
-            }
+            return Client.Execute<object>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task<List<object>> GetArrayAsync(GremlinScript Script)
+        {
+            return Client.ExecuteAsync<object>(Script.GetScript(), Script.GetBindings());
+        }
+
+        public List<ValueType> GetArray<ValueType>(GremlinScript Script)
+        {
+            return Client.Execute<ValueType>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task<List<ValueType>> GetArrayAsync<ValueType>(GremlinScript Script)
+        {
+            return Client.ExecuteAsync<ValueType>(Script.GetScript(), Script.GetBindings());
+        }
+        #endregion
+
+        #region Scalar
+        public object GetScalar(GremlinScript Script)
+        {
+            return Client.ExecuteScalar<object>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task<object> GetScalarAsync(GremlinScript Script)
+        {
+            return Client.ExecuteScalarAsync<object>(Script.GetScript(), Script.GetBindings());
+        }
+
+        public ValueType GetScalar<ValueType>(GremlinScript Script)
+        {
+            return Client.ExecuteScalar<ValueType>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task<ValueType> GetScalarAsync<ValueType>(GremlinScript Script)
+        {
+            return Client.ExecuteScalarAsync<ValueType>(Script.GetScript(), Script.GetBindings());
         }
         #endregion
 
         #region GetDictionaryArray
         public List<Dictionary<string, object>> GetDictionaryArray(GremlinScript Script)
         {
-            try
-            {
-                return Client.Send<Dictionary<string, object>>(Script.GetScript(), Script.GetBindings());
-            }
-            catch (Exception E)
-            {
-                throw new Exception(E.Message + "\r\n" + Script.GetReadableScript(), E);
-            }
+            return Client.Execute<Dictionary<string, object>>(Script.GetScript(), Script.GetBindings());
         }
-        #endregion
-
-        #region GetScalar
-        public object GetScalar(GremlinScript Script)
+        public Task<List<Dictionary<string, object>>> GetDictionaryArrayAsync(GremlinScript Script)
         {
-            var Results = Client.Send<object>(Script.GetScript(), Script.GetBindings());
-            if (Results == null || Results.Count == 0)
-                return null;
-            return Results.First();
+            return Client.ExecuteAsync<Dictionary<string, object>>(Script.GetScript(), Script.GetBindings());
         }
         #endregion
 
         #region Execute
         public void Execute(GremlinScript Script)
         {
-            Client.Send<object>(Script.GetScript(), Script.GetBindings());
+            Client.Execute<object>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task ExecuteAsync(GremlinScript Script)
+        {
+            return Client.ExecuteAsync<object>(Script.GetScript(), Script.GetBindings());
         }
         #endregion
 

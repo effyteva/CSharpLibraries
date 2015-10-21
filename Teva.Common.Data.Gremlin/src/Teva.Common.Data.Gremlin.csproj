@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\UnauthorizedException.cs" />
     <Compile Include="Exceptions\ServerSerializationError.cs" />
     <Compile Include="Exceptions\ServerTimeoutException.cs" />
     <Compile Include="Exceptions\ScriptEvaluationErrorException.cs" />
@@ -62,9 +63,11 @@
     <Compile Include="GraphItems\GraphItem.cs" />
     <Compile Include="GremlinServerClient.cs" />
     <Compile Include="GremlinScript.cs" />
+    <Compile Include="Messages\AuthenticationRequestMessage.cs" />
+    <Compile Include="Messages\AuthenticationRequestArguments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\RequestMessage.cs" />
-    <Compile Include="Messages\ScriptArguments.cs" />
+    <Compile Include="Messages\ScriptRequestArguments.cs" />
     <Compile Include="Messages\ScriptRequestMessage.cs" />
     <Compile Include="Messages\ScriptResponse.cs" />
     <Compile Include="Messages\ScriptResponseResult.cs" />

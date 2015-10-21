@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Teva.Common.Data.Gremlin.Messages
 {
-    public class ScriptRequestMessage : RequestMessage
+    public class AuthenticationRequestMessage : RequestMessage
     {
-        public ScriptRequestMessage()
+        public AuthenticationRequestMessage()
         {
-            Operation = "eval";
+            Operation = "authentication";
         }
 
         [JsonProperty("args", Order = 3)]
-        public ScriptRequestArguments Arguments { get; set; }
+        public AuthenticationRequestArguments Arguments { get; set; }
     }
 }

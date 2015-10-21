@@ -7,15 +7,13 @@ using System.Threading.Tasks;
 
 namespace Teva.Common.Data.Gremlin.Messages
 {
-    public class ScriptArguments
+    public class ScriptRequestArguments
     {
-        public ScriptArguments()
+        public ScriptRequestArguments()
         {
-            Language = "gremlin-groovy";
         }
 
-        public ScriptArguments(string Gremlin, Dictionary<string, object> Bindings, Guid? Session)
-            : this()
+        public ScriptRequestArguments(string Gremlin, Dictionary<string, object> Bindings, Guid? Session)
         {
             this.Gremlin = Gremlin;
             this.Bindings = Bindings;
@@ -32,6 +30,6 @@ namespace Teva.Common.Data.Gremlin.Messages
         public Dictionary<string, object> Bindings { get; set; }
 
         [JsonProperty("language")]
-        public string Language { get; set; }
+        public string Language { get; set; } = "gremlin-groovy";
     }
 }

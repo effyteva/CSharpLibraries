@@ -3,7 +3,7 @@ Effy Teva - C# Libraries
 As Gremlin Server will hopefully soon be released,
 I've created a C# client for accessing it, using .NET WebSockets.
 
-Please note this requires .NET Framework (currency compiled for 4.6)
+Please note this requires .NET Framework 4.6
 
 There are three primary classes:
 * GremlinClient - Uses both GremlinScript and GremlinServerClient, to provide an easy to use library on Gremlin

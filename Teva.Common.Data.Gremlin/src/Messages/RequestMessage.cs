@@ -12,7 +12,6 @@ namespace Teva.Common.Data.Gremlin.Messages
         public RequestMessage()
         {
             RequestID = Guid.NewGuid();
-            Operation = "eval";
             Processor = "";
         }
 
