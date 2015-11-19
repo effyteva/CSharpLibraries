@@ -17,7 +17,27 @@ namespace Teva.Common.Data.Gremlin
             this.Client = new GremlinServerClient(Host, Port, Username: Username, Password: Password);
         }
 
-        #region Vertices
+        #region VertexExists
+        public bool VertexExistsByIndex(string IndexName, object ID)
+        {
+            return GetBoolean(new GremlinScript().Append_VertexExistsByIndex(IndexName, ID));
+        }
+        public Task<bool> VertexExistsByIndexAsync(string IndexName, object ID)
+        {
+            return GetBooleanAsync(new GremlinScript().Append_VertexExistsByIndex(IndexName, ID));
+        }
+
+        public bool VertexExistsByIndexAndLabel(string Label, string IndexName, object ID)
+        {
+            return GetBoolean(new GremlinScript().Append_VertexExistsByIndexAndLabel(Label, IndexName, ID));
+        }
+        public Task<bool> VertexExistsByIndexAndLabelAsync(string Label, string IndexName, object ID)
+        {
+            return GetBooleanAsync(new GremlinScript().Append_VertexExistsByIndexAndLabel(Label, IndexName, ID));
+        }
+        #endregion
+
+        #region GetVertex
         public GraphItems.Vertex GetVertex(GremlinScript Script)
         {
             return Client.ExecuteScalar<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
@@ -27,6 +47,35 @@ namespace Teva.Common.Data.Gremlin
             return Client.ExecuteScalarAsync<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
         }
 
+        public GraphItems.Vertex GetVertex(string ID)
+        {
+            return GetVertex(new GremlinScript().Append_GetVertex(ID));
+        }
+        public Task<GraphItems.Vertex> GetVertexAsync(string ID)
+        {
+            return GetVertexAsync(new GremlinScript().Append_GetVertex(ID));
+        }
+
+        public GraphItems.Vertex GetVertexByIndex(string IndexName, object ID)
+        {
+            return GetVertex(new GremlinScript().Append_GetVerticesByIndex(IndexName, ID));
+        }
+        public Task<GraphItems.Vertex> GetVertexByIndexAsync(string IndexName, object ID)
+        {
+            return GetVertexAsync(new GremlinScript().Append_GetVerticesByIndex(IndexName, ID));
+        }
+
+        public GraphItems.Vertex GetVertexByIndexAndLabel(string Label, string IndexName, object ID)
+        {
+            return GetVertex(new GremlinScript().Append_GetVerticesByIndexAndLabel(Label, IndexName, ID));
+        }
+        public Task<GraphItems.Vertex> GetVertexByIndexAndLabelAsync(string Label, string IndexName, object ID)
+        {
+            return GetVertexAsync(new GremlinScript().Append_GetVerticesByIndexAndLabel(Label, IndexName, ID));
+        }
+        #endregion
+
+        #region GetVertices
         public List<GraphItems.Vertex> GetVertices(GremlinScript Script)
         {
             return Client.Execute<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
@@ -36,6 +85,61 @@ namespace Teva.Common.Data.Gremlin
             return Client.ExecuteAsync<GraphItems.Vertex>(Script.GetScript(), Script.GetBindings());
         }
 
+        public List<GraphItems.Vertex> GetVerticesByIndex(string IndexName, object ID)
+        {
+            return GetVertices(new GremlinScript().Append_GetVerticesByIndex(IndexName, ID));
+        }
+        public Task<List<GraphItems.Vertex>> GetVerticesByIndexAsync(string IndexName, object ID)
+        {
+            return GetVerticesAsync(new GremlinScript().Append_GetVerticesByIndex(IndexName, ID));
+        }
+        public List<GraphItems.Vertex> GetVerticesByIndex(string IndexName, IEnumerable<object> IDs)
+        {
+            return GetVertices(new GremlinScript().Append_GetVerticesByIndex(IndexName, IDs));
+        }
+        public Task<List<GraphItems.Vertex>> GetVerticeByIndexAsync(string IndexName, IEnumerable<object> IDs)
+        {
+            return GetVerticesAsync(new GremlinScript().Append_GetVerticesByIndex(IndexName, IDs));
+        }
+
+        public List<GraphItems.Vertex> GetVerticesByIndexAndLabel(string Label, string IndexName, object ID)
+        {
+            return GetVertices(new GremlinScript().Append_GetVerticesByIndexAndLabel(Label, IndexName, ID));
+        }
+        public Task<List<GraphItems.Vertex>> GetVerticesByIndexAndLabelAsync(string Label, string IndexName, object ID)
+        {
+            return GetVerticesAsync(new GremlinScript().Append_GetVerticesByIndexAndLabel(Label, IndexName, ID));
+        }
+        public List<GraphItems.Vertex> GetVerticesByIndexAndLabel(string Label, string IndexName, IEnumerable<object> IDs)
+        {
+            return GetVertices(new GremlinScript().Append_GetVerticesByIndexAndLabel(Label, IndexName, IDs));
+        }
+        public Task<List<GraphItems.Vertex>> GetVerticesByIndexAndLabelAsync(string Label, string IndexName, IEnumerable<object> IDs)
+        {
+            return GetVerticesAsync(new GremlinScript().Append_GetVerticesByIndexAndLabel(Label, IndexName, IDs));
+        }
+        #endregion
+
+        #region GetVertexID
+        public string GetVertexIDByIndex(string IndexName, object ID)
+        {
+            return GetString(new GremlinScript().Append_GetVertexIDByIndex(IndexName, ID));
+        }
+        public Task<string> GetVertexIDByIndexAsync(string IndexName, object ID)
+        {
+            return GetStringAsync(new GremlinScript().Append_GetVertexIDByIndex(IndexName, ID));
+        }
+        public string GetVertexIDByIndexAndLabel(string Label, string IndexName, object ID)
+        {
+            return GetString(new GremlinScript().Append_GetVertexIDByIndexAndLabel(Label, IndexName, ID));
+        }
+        public Task<string> GetVertexIDByIndexAndLabelAsync(string Label, string IndexName, object ID)
+        {
+            return GetStringAsync(new GremlinScript().Append_GetVertexIDByIndexAndLabel(Label, IndexName, ID));
+        }
+        #endregion
+
+        #region CreateVertex
         public GraphItems.Vertex CreateVertex(Dictionary<string, List<GraphItems.VertexValue>> Properties)
         {
             return GetVertex(new GremlinScript().Append_CreateVertex(Properties));
@@ -45,6 +149,44 @@ namespace Teva.Common.Data.Gremlin
             return GetVertexAsync(new GremlinScript().Append_CreateVertex(Properties));
         }
 
+        public GraphItems.Vertex CreateVertexAndLabel(string Label, Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        {
+            return GetVertex(new GremlinScript().Append_CreateVertexAndLabel(Label, Properties));
+        }
+        public Task<GraphItems.Vertex> CreateVertexAndLabelAsync(string Label, Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        {
+            return GetVertexAsync(new GremlinScript().Append_CreateVertexAndLabel(Label, Properties));
+        }
+        #endregion
+
+        #region DeleteVertex
+        public void DeleteVertex(string ID)
+        {
+            Execute(new GremlinScript().Append_DeleteVertex(ID));
+        }
+        public Task DeleteVertexAsync(string ID)
+        {
+            return ExecuteAsync(new GremlinScript().Append_DeleteVertex(ID));
+        }
+        public void DeleteVertexByIndex(string IndexName, object ID)
+        {
+            Execute(new GremlinScript().Append_DeleteVertexByIndex(IndexName, ID));
+        }
+        public Task DeleteVertexByIndexAsync(string IndexName, object ID)
+        {
+            return ExecuteAsync(new GremlinScript().Append_DeleteVertexByIndex(IndexName, ID));
+        }
+        public void DeleteVertexByIndexAndLabel(string Label, string IndexName, object ID)
+        {
+            Execute(new GremlinScript().Append_DeleteVertexByIndexAndLabel(Label, IndexName, ID));
+        }
+        public Task DeleteVertexByIndexAndLabelAsync(string Label, string IndexName, object ID)
+        {
+            return ExecuteAsync(new GremlinScript().Append_DeleteVertexByIndexAndLabel(Label, IndexName, ID));
+        }
+        #endregion
+
+        #region UpdateVertex
         public void UpdateVertex(string ID, Dictionary<string, List<GraphItems.VertexValue>> Properties, bool RemoveOtherProperties)
         {
             Execute(new GremlinScript().Append_UpdateVertex(ID, Properties, RemoveOtherProperties).Append("null;"));
@@ -55,7 +197,22 @@ namespace Teva.Common.Data.Gremlin
         }
         #endregion
 
-        #region Edges
+        #region EdgeExists
+        public bool EdgeExistsBoth(string StartVertexID, string Name)
+        {
+            return GetBoolean(new GremlinScript().Append_EdgeExists_Both(StartVertexID, Name));
+        }
+        public bool EdgeExistsOut(string StartVertexID, string Name)
+        {
+            return GetBoolean(new GremlinScript().Append_EdgeExists_Out(StartVertexID, Name));
+        }
+        public bool EdgeExistsIn(string StartVertexID, string Name)
+        {
+            return GetBoolean(new GremlinScript().Append_EdgeExists_In(StartVertexID, Name));
+        }
+        #endregion
+
+        #region CreateEdge
         public GraphItems.Edge CreateEdge(string StartVertexID, string EndVertexID, string Name, Dictionary<string, object> Properties = null)
         {
             return GetEdge(new GremlinScript().Append_CreateEdge(StartVertexID, EndVertexID, Name, Properties));
@@ -64,14 +221,54 @@ namespace Teva.Common.Data.Gremlin
         {
             return GetEdgeAsync(new GremlinScript().Append_CreateEdge(StartVertexID, EndVertexID, Name, Properties));
         }
+        #endregion
 
-        public void DeleteEdge(string EdgeID)
+        #region DeleteEdge
+        public void DeleteEdge(string ID)
         {
-            Execute(new GremlinScript().Append_DeleteEdge(EdgeID));
+            Execute(new GremlinScript().Append_DeleteEdge(ID));
         }
-        public Task DeleteEdgeAsync(string EdgeID)
+        public Task DeleteEdgeAsync(string ID)
         {
-            return ExecuteAsync(new GremlinScript().Append_DeleteEdge(EdgeID));
+            return ExecuteAsync(new GremlinScript().Append_DeleteEdge(ID));
+        }
+
+        public void DeleteEdgeBoth(string StartVertexID, string Name)
+        {
+            Execute(new GremlinScript().Append_DeleteEdge_Both(StartVertexID, Name));
+        }
+        public Task DeleteEdgeBothAsync(string StartVertexID, string Name)
+        {
+            return ExecuteAsync(new GremlinScript().Append_DeleteEdge_Both(StartVertexID, Name));
+        }
+
+        public void DeleteEdgeOut(string StartVertexID, string Name)
+        {
+            Execute(new GremlinScript().Append_DeleteEdge_Out(StartVertexID, Name));
+        }
+        public Task DeleteEdgeOutAsync(string StartVertexID, string Name)
+        {
+            return ExecuteAsync(new GremlinScript().Append_DeleteEdge_Out(StartVertexID, Name));
+        }
+
+        public void DeleteEdgeIn(string StartVertexID, string Name)
+        {
+            Execute(new GremlinScript().Append_DeleteEdge_In(StartVertexID, Name));
+        }
+        public Task DeleteEdgeInAsync(string StartVertexID, string Name)
+        {
+            return ExecuteAsync(new GremlinScript().Append_DeleteEdge_In(StartVertexID, Name));
+        }
+        #endregion
+
+        #region GetEdge
+        public GraphItems.Edge GetEdge(GremlinScript Script)
+        {
+            return Client.ExecuteScalar<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task<GraphItems.Edge> GetEdgeAsync(GremlinScript Script)
+        {
+            return Client.ExecuteScalarAsync<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
         }
 
         public GraphItems.Edge GetEdge(string ID)
@@ -82,16 +279,9 @@ namespace Teva.Common.Data.Gremlin
         {
             return GetEdgeAsync(new GremlinScript().Append_GetEdge(ID));
         }
+        #endregion
 
-        public GraphItems.Edge GetEdge(GremlinScript Script)
-        {
-            return Client.ExecuteScalar<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
-        }
-        public Task<GraphItems.Edge> GetEdgeAsync(GremlinScript Script)
-        {
-            return Client.ExecuteScalarAsync<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
-        }
-
+        #region GetEdges
         public List<GraphItems.Edge> GetEdges(GremlinScript Script)
         {
             return Client.Execute<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
@@ -99,6 +289,28 @@ namespace Teva.Common.Data.Gremlin
         public Task<List<GraphItems.Edge>> GetEdgesAsync(GremlinScript Script)
         {
             return Client.ExecuteAsync<GraphItems.Edge>(Script.GetScript(), Script.GetBindings());
+        }
+        #endregion
+
+        #region GetBoolean
+        public bool GetBoolean(GremlinScript Script)
+        {
+            return Client.ExecuteScalar<bool>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task<bool> GetBooleanAsync(GremlinScript Script)
+        {
+            return Client.ExecuteScalarAsync<bool>(Script.GetScript(), Script.GetBindings());
+        }
+        #endregion
+
+        #region GetString
+        public string GetString(GremlinScript Script)
+        {
+            return Client.ExecuteScalar<string>(Script.GetScript(), Script.GetBindings());
+        }
+        public Task<string> GetStringAsync(GremlinScript Script)
+        {
+            return Client.ExecuteScalarAsync<string>(Script.GetScript(), Script.GetBindings());
         }
         #endregion
 
@@ -193,13 +405,26 @@ namespace Teva.Common.Data.Gremlin
             var Array = (JArray)Object;
             if (Array.Count == 0)
                 return null;
-            return Array.Select(T =>
+            var ToReturn = new List<Dictionary<string, object>>();
+            foreach (var Item in Array)
             {
-                if (T.Type == JTokenType.Array && T.Count() == 1)
-                    return T.First.ToObject<Dictionary<string, object>>();
+                if (Item.Type == JTokenType.Array && Item.Count() <= 1)
+                {
+                    if (Item.First == null)
+                        continue;
+                    if (Item.First.Type == JTokenType.Array && Item.First.Count() <= 1)
+                    {
+                        if (Item.First.First == null)
+                            continue;
+                        ToReturn.Add(Item.First.First.ToObject<Dictionary<string, object>>());
+                    }
+                    else
+                        ToReturn.Add(Item.First.ToObject<Dictionary<string, object>>());
+                }
                 else
-                    return T.ToObject<Dictionary<string, object>>();
-            }).ToList();
+                    ToReturn.Add(Item.ToObject<Dictionary<string, object>>());
+            }
+            return ToReturn;
         }
         public GraphItems.Vertex GetVertexFromJObject(object Object)
         {
