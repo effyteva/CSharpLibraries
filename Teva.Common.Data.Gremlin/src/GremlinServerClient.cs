@@ -260,7 +260,7 @@ namespace Teva.Common.Data.Gremlin
         private static readonly TaskFactory TaskFactory = new TaskFactory(System.Threading.CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
         private static TResult RunSync<TResult>(Func<Task<TResult>> Function)
         {
-            return TaskFactory.StartNew<Task<TResult>>(Function).Unwrap<TResult>().GetAwaiter().GetResult();
+            return TaskFactory.StartNew(Function).Unwrap().GetAwaiter().GetResult();
         }
 
         public string Host { get; private set; }

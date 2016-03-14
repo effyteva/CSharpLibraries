@@ -391,7 +391,7 @@ namespace Teva.Common.Data.Gremlin
         }
         public GremlinScript Append_DeleteVertexByIndexAndLabel(string Label, string IndexName, object ID)
         {
-            return Append_GetVerticesByIndex(IndexName, ID).Append_DeletePipeGraphItems().Append_Iterate();
+            return Append_GetVerticesByIndexAndLabel(Label, IndexName, ID).Append_DeletePipeGraphItems().Append_Iterate();
         }
         #endregion
 
@@ -403,6 +403,10 @@ namespace Teva.Common.Data.Gremlin
         public GremlinScript Append_In(string Name)
         {
             return Append(".in('" + Name + "')");
+        }
+        public GremlinScript Append_In(string[] Names)
+        {
+            return Append(".in(").Append_Values(Names).Append(")");
         }
 
         public GremlinScript Append_InE()
@@ -421,6 +425,10 @@ namespace Teva.Common.Data.Gremlin
         public GremlinScript Append_Out(string Name)
         {
             return Append(".out('" + Name + "')");
+        }
+        public GremlinScript Append_Out(string[] Names)
+        {
+            return Append(".out(").Append_Values(Names).Append(")");
         }
 
         public GremlinScript Append_OutE()
@@ -494,11 +502,11 @@ namespace Teva.Common.Data.Gremlin
         }
         public GremlinScript Append_FilterContains(string Value)
         {
-            return Append(".is(textRegex(").Append_Parameter(".*(?i)(" + System.Text.RegularExpressions.Regex.Escape(Value) + ").*").Append("))");
+            return Append(".is(textRegex(").Append_Parameter("(?s)(?i).*(" + System.Text.RegularExpressions.Regex.Escape(Value) + ").*").Append("))");
         }
         public GremlinScript Append_FilterContains(string Name, string Value)
         {
-            return Append(".has(").Append_Parameter(Name).Append(",textRegex(").Append_Parameter(".*(?i)(" + System.Text.RegularExpressions.Regex.Escape(Value) + ").*").Append("))");
+            return Append(".has(").Append_Parameter(Name).Append(",textRegex(").Append_Parameter("(?s)(?i).*(" + System.Text.RegularExpressions.Regex.Escape(Value) + ").*").Append("))");
         }
         public GremlinScript Append_FilterGreaterThanEquals(object Value)
         {
@@ -560,11 +568,7 @@ namespace Teva.Common.Data.Gremlin
         {
             return Append(".id()");
         }
-        public GremlinScript Append_IDs()
-        {
-            return Append(".id()");
-        }
-
+        
         public GremlinScript Append_ValueMap()
         {
             return Append(".valueMap()");
@@ -637,16 +641,10 @@ namespace Teva.Common.Data.Gremlin
         public GremlinScript Append_ItEdgeToPipe()
         {
             return Append("g.E(it.get())");
-            //return Append("it._()");
         }
         public GremlinScript Append_ItGet()
         {
             return Append("it.get()");
-        }
-        // Untested
-        public GremlinScript Append_CommitGraph()
-        {
-            return Append("g.commit();");
         }
         public GremlinScript Append_Range(long From, long Count)
         {

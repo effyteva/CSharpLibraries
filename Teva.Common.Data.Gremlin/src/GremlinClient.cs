@@ -93,6 +93,7 @@ namespace Teva.Common.Data.Gremlin
         {
             return GetVerticesAsync(new GremlinScript().Append_GetVerticesByIndex(IndexName, ID));
         }
+
         public List<GraphItems.Vertex> GetVerticesByIndex(string IndexName, IEnumerable<object> IDs)
         {
             return GetVertices(new GremlinScript().Append_GetVerticesByIndex(IndexName, IDs));
@@ -110,6 +111,7 @@ namespace Teva.Common.Data.Gremlin
         {
             return GetVerticesAsync(new GremlinScript().Append_GetVerticesByIndexAndLabel(Label, IndexName, ID));
         }
+
         public List<GraphItems.Vertex> GetVerticesByIndexAndLabel(string Label, string IndexName, IEnumerable<object> IDs)
         {
             return GetVertices(new GremlinScript().Append_GetVerticesByIndexAndLabel(Label, IndexName, IDs));
@@ -129,6 +131,7 @@ namespace Teva.Common.Data.Gremlin
         {
             return GetStringAsync(new GremlinScript().Append_GetVertexIDByIndex(IndexName, ID));
         }
+
         public string GetVertexIDByIndexAndLabel(string Label, string IndexName, object ID)
         {
             return GetString(new GremlinScript().Append_GetVertexIDByIndexAndLabel(Label, IndexName, ID));
@@ -168,6 +171,7 @@ namespace Teva.Common.Data.Gremlin
         {
             return ExecuteAsync(new GremlinScript().Append_DeleteVertex(ID));
         }
+
         public void DeleteVertexByIndex(string IndexName, object ID)
         {
             Execute(new GremlinScript().Append_DeleteVertexByIndex(IndexName, ID));
@@ -176,6 +180,7 @@ namespace Teva.Common.Data.Gremlin
         {
             return ExecuteAsync(new GremlinScript().Append_DeleteVertexByIndex(IndexName, ID));
         }
+
         public void DeleteVertexByIndexAndLabel(string Label, string IndexName, object ID)
         {
             Execute(new GremlinScript().Append_DeleteVertexByIndexAndLabel(Label, IndexName, ID));
@@ -202,13 +207,27 @@ namespace Teva.Common.Data.Gremlin
         {
             return GetBoolean(new GremlinScript().Append_EdgeExists_Both(StartVertexID, Name));
         }
+        public Task<bool> EdgeExistsBothAsync(string StartVertexID, string Name)
+        {
+            return GetBooleanAsync(new GremlinScript().Append_EdgeExists_Both(StartVertexID, Name));
+        }
+
         public bool EdgeExistsOut(string StartVertexID, string Name)
         {
             return GetBoolean(new GremlinScript().Append_EdgeExists_Out(StartVertexID, Name));
         }
+        public Task<bool> EdgeExistsOutAsync(string StartVertexID, string Name)
+        {
+            return GetBooleanAsync(new GremlinScript().Append_EdgeExists_Out(StartVertexID, Name));
+        }
+
         public bool EdgeExistsIn(string StartVertexID, string Name)
         {
             return GetBoolean(new GremlinScript().Append_EdgeExists_In(StartVertexID, Name));
+        }
+        public Task<bool> EdgeExistsInAsync(string StartVertexID, string Name)
+        {
+            return GetBooleanAsync(new GremlinScript().Append_EdgeExists_In(StartVertexID, Name));
         }
         #endregion
 
