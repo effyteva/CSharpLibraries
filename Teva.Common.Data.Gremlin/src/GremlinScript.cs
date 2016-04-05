@@ -67,7 +67,7 @@ namespace Teva.Common.Data.Gremlin
         public string InternalSB_Close()
         {
             if (StoredSBs == null || StoredSBs.Count == 0)
-                throw new Exception("There's no stored SBs");
+                throw new Exception("There's no stored String Builders");
             var ToReturn = SB.ToString();
             SB = StoredSBs[StoredSBs.Count - 1];
             StoredSBs.RemoveAt(StoredSBs.Count - 1);
@@ -92,7 +92,6 @@ namespace Teva.Common.Data.Gremlin
         {
             string ToReturn = SB.ToString();
             for (int i = Parameters.Count - 1; i > -1; i--)
-            //for (int i = 0; i < Parameters.Count; i++)
             {
                 string NewValue;
                 if (Parameters[i] is string)
@@ -290,20 +289,44 @@ namespace Teva.Common.Data.Gremlin
         {
             return Append_GetVertex(StartVertexID).Append_InE(EdgeName);
         }
+        public GremlinScript Append_GetEdge_Between_Both(string StartVertexID, string EndVertexID, string EdgeName)
+        {
+            return Append_GetEdge_Both(StartVertexID, EdgeName).Append_FilterInVertex(EndVertexID);
+        }
+        public GremlinScript Append_GetEdge_Between_In(string StartVertexID, string EndVertexID, string EdgeName)
+        {
+            return Append_GetEdge_In(StartVertexID, EdgeName).Append_FilterInVertex(EndVertexID);
+        }
+        public GremlinScript Append_GetEdge_Between_Out(string StartVertexID, string EndVertexID, string EdgeName)
+        {
+            return Append_GetEdge_Out(StartVertexID, EdgeName).Append_FilterInVertex(EndVertexID);
+        }
         #endregion
 
         #region EdgeExists
-        public GremlinScript Append_EdgeExists_Both(string StartVertexID, string EdgeName)
+        public GremlinScript Append_EdgeExistsBoth(string StartVertexID, string EdgeName)
         {
             return Append_GetEdge_Both(StartVertexID, EdgeName).Append_HasNext();
         }
-        public GremlinScript Append_EdgeExists_Out(string StartVertexID, string EdgeName)
+        public GremlinScript Append_EdgeExistsOut(string StartVertexID, string EdgeName)
         {
             return Append_GetEdge_Out(StartVertexID, EdgeName).Append_HasNext();
         }
-        public GremlinScript Append_EdgeExists_In(string StartVertexID, string EdgeName)
+        public GremlinScript Append_EdgeExistsIn(string StartVertexID, string EdgeName)
         {
             return Append_GetEdge_In(StartVertexID, EdgeName).Append_HasNext();
+        }
+        public GremlinScript Append_EdgeExistsBetweenBoth(string StartVertexID, string EndVertexID, string EdgeName)
+        {
+            return Append_GetEdge_Between_Both(StartVertexID, EndVertexID, EdgeName).Append_HasNext();
+        }
+        public GremlinScript Append_EdgeExistsBetweenOut(string StartVertexID, string EndVertexID, string EdgeName)
+        {
+            return Append_GetEdge_Between_Out(StartVertexID, EndVertexID, EdgeName).Append_HasNext();
+        }
+        public GremlinScript Append_EdgeExistsBetweenIn(string StartVertexID, string EndVertexID, string EdgeName)
+        {
+            return Append_GetEdge_Between_In(StartVertexID, EndVertexID, EdgeName).Append_HasNext();
         }
         #endregion
 
@@ -323,6 +346,59 @@ namespace Teva.Common.Data.Gremlin
         public GremlinScript Append_CreateEdge_EndIndex(string StartVertexID, string EndVertexIndexName, object EndVertexID, string Name, Dictionary<string, object> Properties = null)
         {
             return Append_GetVertex(StartVertexID).Append_Next().Append(".addEdge(").Append_Parameter(Name).Append(",").Append_GetVerticesByIndex(EndVertexIndexName, EndVertexID).Append_Next().Append_PropertiesArrayString(Properties, true).Append(");");
+        }
+        #endregion
+
+        #region GetOrCreateEdge
+        public GremlinScript Append_GetOrCreateEdge_Out(string StartVertexID, string EndVertexID, string Name, Dictionary<string, object> Properties = null)
+        {
+            return Append_GetEdge_Between_Out(StartVertexID, EndVertexID, Name).Append_TryNext().Append(".orElseGet({").Append_CreateEdge(StartVertexID, EndVertexID, Name, Properties).Append("})");
+        }
+        #endregion
+
+        #region UpdateEdge
+        public GremlinScript Append_UpdateEdge(string ID, Dictionary<string, object> Properties, bool RemoveOtherProperties)
+        {
+            string VariableName = GetNextVariableName();
+            Append("def " + VariableName + "=").Append_GetEdge(ID).Append_Next().Append(";");
+            if (RemoveOtherProperties)
+            {
+                Append(VariableName + ".properties().each{it.remove()};");
+                foreach (var Property in Properties)
+                {
+                    if (Property.Value == null)
+                        continue;
+                    Append(VariableName).Append_SetProperty(Property.Key, Property.Value);
+                }
+            }
+            else
+            {
+                foreach (var Property in Properties)
+                    Append(VariableName).Append_SetProperty(Property.Key, Property.Value);
+            }
+            return this;
+        }
+
+        public GremlinScript Append_UpdateEdgeBetween_Out(string StartVertexID, string EndVertexID, string EdgeName, Dictionary<string, object> Properties, bool RemoveOtherProperties)
+        {
+            string VariableName = GetNextVariableName();
+            Append("def " + VariableName + "=").Append_GetEdge_Between_Out(StartVertexID, EndVertexID, EdgeName).Append_Next().Append(";");
+            if (RemoveOtherProperties)
+            {
+                Append(VariableName + ".properties().each{it.remove()};");
+                foreach (var Property in Properties)
+                {
+                    if (Property.Value == null)
+                        continue;
+                    Append(VariableName).Append_SetProperty(Property.Key, Property.Value);
+                }
+            }
+            else
+            {
+                foreach (var Property in Properties)
+                    Append(VariableName).Append_SetProperty(Property.Key, Property.Value);
+            }
+            return this;
         }
         #endregion
 
@@ -348,11 +424,22 @@ namespace Teva.Common.Data.Gremlin
         #region CreateVertex
         public GremlinScript Append_CreateVertex(Dictionary<string, List<GraphItems.VertexValue>> Properties)
         {
-            return Append("g.addV(").Append_PropertiesArrayString(Properties).Append(").next()");
+            return Append("g.addV(").Append_PropertiesArrayString(Properties).Append(")").Append_Next();
         }
-        public GremlinScript Append_CreateVertexAndLabel(string Label, Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        public GremlinScript Append_CreateVertexWithLabel(string Label, Dictionary<string, List<GraphItems.VertexValue>> Properties)
         {
-            return Append("g.addV(T.label,").Append_Parameter(Label).Append(",").Append_PropertiesArrayString(Properties).Append(").next()");
+            return Append("g.addV(T.label,").Append_Parameter(Label).Append(",").Append_PropertiesArrayString(Properties).Append(")").Append_Next();
+        }
+        #endregion
+
+        #region GetOrCreateVertex
+        public GremlinScript Append_GetOrCreateVertex(string IndexName, object ID, Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        {
+            return Append_GetVerticesByIndex(IndexName, ID).Append_TryNext().Append(".orElseGet({").Append_CreateVertex(Properties).Append("})");
+        }
+        public GremlinScript Append_GetOrCreateVertexWithLabel(string Label, string IndexName, object ID, Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        {
+            return Append_GetVerticesByIndexAndLabel(Label, IndexName, ID).Append_TryNext().Append(".orElseGet({").Append_CreateVertexWithLabel(Label, Properties).Append("})");
         }
         #endregion
 
@@ -402,7 +489,7 @@ namespace Teva.Common.Data.Gremlin
         }
         public GremlinScript Append_In(string Name)
         {
-            return Append(".in('" + Name + "')");
+            return Append(".in(").Append_Parameter(Name).Append(")");
         }
         public GremlinScript Append_In(string[] Names)
         {
@@ -415,7 +502,7 @@ namespace Teva.Common.Data.Gremlin
         }
         public GremlinScript Append_InE(string Name)
         {
-            return Append(".inE('" + Name + "')");
+            return Append(".inE(").Append_Parameter(Name).Append(")");
         }
 
         public GremlinScript Append_Out()
@@ -424,7 +511,7 @@ namespace Teva.Common.Data.Gremlin
         }
         public GremlinScript Append_Out(string Name)
         {
-            return Append(".out('" + Name + "')");
+            return Append(".out(").Append_Parameter(Name).Append(")");
         }
         public GremlinScript Append_Out(string[] Names)
         {
@@ -437,7 +524,7 @@ namespace Teva.Common.Data.Gremlin
         }
         public GremlinScript Append_OutE(string Name)
         {
-            return Append(".outE('" + Name + "')");
+            return Append(".outE(").Append_Parameter(Name).Append(")");
         }
 
         public GremlinScript Append_InV()
@@ -455,7 +542,7 @@ namespace Teva.Common.Data.Gremlin
         }
         public GremlinScript Append_Both(string Name)
         {
-            return Append(".both('" + Name + "')");
+            return Append(".both(").Append_Parameter(Name).Append(")");
         }
 
         public GremlinScript Append_BothE()
@@ -464,7 +551,7 @@ namespace Teva.Common.Data.Gremlin
         }
         public GremlinScript Append_BothE(string Name)
         {
-            return Append(".bothE('" + Name + "')");
+            return Append(".bothE(").Append_Parameter(Name).Append(")");
         }
 
         public GremlinScript Append_BothV()
@@ -540,6 +627,22 @@ namespace Teva.Common.Data.Gremlin
         {
             return Append(".has(T.label,").Append_Parameter(Label).Append(")");
         }
+        public GremlinScript Append_FilterIsVertex(string ID)
+        {
+            return Append(".is(").Append_GetVertex(ID).Append_Next().Append(")");
+        }
+        public GremlinScript Append_FilterBothVertex(string EndVertexID)
+        {
+            return Append(".filter(").Append("bothV()").Append_FilterIsVertex(EndVertexID).Append(")");
+        }
+        public GremlinScript Append_FilterOutVertex(string EndVertexID)
+        {
+            return Append(".filter(").Append("outV()").Append_FilterIsVertex(EndVertexID).Append(")");
+        }
+        public GremlinScript Append_FilterInVertex(string EndVertexID)
+        {
+            return Append(".filter(").Append("inV()").Append_FilterIsVertex(EndVertexID).Append(")");
+        }
         #endregion
 
         #region Properties
@@ -568,11 +671,13 @@ namespace Teva.Common.Data.Gremlin
         {
             return Append(".id()");
         }
-        
+
         public GremlinScript Append_ValueMap()
         {
             return Append(".valueMap()");
         }
+
+        #region Transforms
         public GremlinScript Append_StartTransform()
         {
             return Append(".map");
@@ -585,6 +690,9 @@ namespace Teva.Common.Data.Gremlin
         {
             return Append("]}");
         }
+        #endregion
+
+        #region Next
         public GremlinScript Append_Next()
         {
             return Append(".next()");
@@ -593,6 +701,12 @@ namespace Teva.Common.Data.Gremlin
         {
             return Append(".hasNext()");
         }
+        public GremlinScript Append_TryNext()
+        {
+            return Append(".tryNext()");
+        }
+        #endregion
+
         public GremlinScript Append_As(string Name)
         {
             return Append(".as('" + Name + "')");
@@ -602,6 +716,7 @@ namespace Teva.Common.Data.Gremlin
             return Append(".select('" + Name + "')");
         }
 
+        #region Aggregations
         public GremlinScript Append_Count()
         {
             return Append(".count()");
@@ -618,6 +733,8 @@ namespace Teva.Common.Data.Gremlin
         {
             return Append(".sum()");
         }
+        #endregion
+
         public GremlinScript Append_Unfold()
         {
             return Append(".unfold()");
